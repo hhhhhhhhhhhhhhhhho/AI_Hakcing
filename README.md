@@ -9,6 +9,8 @@
 > 2021.2.13 -
   practical black-box attacks against machine learning 논문
 
+> 2021.3.2 -
+  practical deep speech 
 
 | White Box Hacking
 > 2021.2.21 -
