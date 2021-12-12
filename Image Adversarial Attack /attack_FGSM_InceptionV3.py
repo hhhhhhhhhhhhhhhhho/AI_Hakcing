@@ -6,6 +6,15 @@ from keras.preprocessing import image
 from keras.applications import inception_v3
 from keras import backend as K
 from PIL import Image
+import argparse
+
+parser = argparse.ArgumentParser(description="사용법")
+
+parser.add_argument('--target',required=True) # inception v3 에 오작동 시킬 이미지를 선택합니다. 
+parser.add_argument('--after',required=True) # inception v3 Label 중 어떤것으로 적대적 공격할지 결정합니다. 
+
+args = parser.parse_args()
+
 
 # Load pre-trained image recognition model
 model = inception_v3.InceptionV3()
@@ -17,10 +26,10 @@ model_output_layer = model.layers[-1].output
 # Choose an ImageNet object to fake
 # The list of classes is available here: https://gist.github.com/ageitgey/4e1342c10a71981d0b491e1b8227328b
 # Class #859 is "toaster"
-object_type_to_fake = 859
+object_type_to_fake = args.after
 
 # Load the image to hack
-img = image.load_img("persian cat.gif", target_size=(299, 299))
+img = image.load_img(args.target, target_size=(299, 299))
 original_image = image.img_to_array(img)
 
 # Scale the image so all pixel intensities are between [-1, 1] as the model expects
@@ -59,7 +68,7 @@ gradient_function = K.gradients(cost_function, model_input_layer)[0]
 grab_cost_and_gradients_from_model = K.function([model_input_layer, K.learning_phase()], [cost_function, gradient_function])
 
 cost = 0.0
-display(grab_cost_and_gradients_from_model)
+#display(grab_cost_and_gradients_from_model) #colab 에서만 작동하는 함수입니다. 
 # In a loop, keep adjusting the hacked image slightly so that it tricks the model more and more
 # until it gets to at least 80% confidence
 with tf.device('/gpu:0'): 
